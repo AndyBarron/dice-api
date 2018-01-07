@@ -36,6 +36,10 @@ app.use(async (ctx, next) => {
   }
 });
 
+apiRouter.get('/health', async (ctx) => {
+  ctx.body = 'healthy';
+});
+
 apiRouter.get('/validate', async (ctx) => {
   const { input } = ctx.query;
   try {
