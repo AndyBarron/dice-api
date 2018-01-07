@@ -1,6 +1,7 @@
 /*
 
 !/app/
+!/CHECKS
 !/grammar.jison
 !/package-lock.json
 !/package.json
