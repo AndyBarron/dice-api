@@ -11,5 +11,6 @@ export const generateRandomNumber = (min, max, seed) => {
 };
 
 export const generateRandomInteger = (min, max, seed) => {
-  return Math.floor(generateRandomNumber(Math.ceil(min), Math.floor(max), seed));
+  // Add 1 to max because it's exclusive in this equation. Math is hard!
+  return Math.floor(generateRandomNumber(Math.ceil(min), Math.floor(max + 1), seed));
 };
