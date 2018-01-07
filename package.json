@@ -1,0 +1,37 @@
+{
+  "name": "dice-api",
+  "version": "0.1.0",
+  "description": "Critical hit!",
+  "main": "app/index",
+  "scripts": {
+    "dev": "nodemon --watch . --ignore ./node_modules/ --ext js,jison,mjs --exec \"npm run server\"",
+    "start": "forever --minUptime 1000 --spinSleepTime 1000 -m Infinity -c \"npm run server\" .",
+    "server": "node --experimental-modules .",
+    "lint": "eslint app --ext mjs",
+    "format": "npm run lint -- --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndyBarron/dice-api.git"
+  },
+  "author": "Andy Barron <AndrewLBarron@gmail.com>",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/AndyBarron/dice-api/issues"
+  },
+  "homepage": "https://github.com/AndyBarron/dice-api#readme",
+  "devDependencies": {
+    "@andybarron/eslint-config": "1.1.0",
+    "eslint": "4.15.0",
+    "nodemon": "1.14.8"
+  },
+  "dependencies": {
+    "dotenv": "4.0.0",
+    "forever": "0.15.3",
+    "jison": "0.4.18",
+    "koa": "2.4.1",
+    "koa-router": "7.3.0",
+    "randomstring": "1.1.5",
+    "seedrandom": "2.4.3"
+  }
+}

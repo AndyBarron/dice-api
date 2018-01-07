@@ -1,0 +1,10 @@
+env:
+  es6: true
+  node: true
+extends: '@andybarron/eslint-config'
+parserOptions:
+  ecmaVersion: 2017
+  sourceType: module
+rules:
+  no-magic-numbers: 0
+  no-nested-ternary: 0
