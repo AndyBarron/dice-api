@@ -56,18 +56,24 @@ apiRouter.get('/validate', async (ctx) => {
     }
   }
   ctx.body = {
+    input,
     valid: true,
   };
 });
 
 apiRouter.get('/stats', async (ctx) => {
   const { input } = ctx.query;
-  ctx.body = parser.parse(input).stats;
+  const { stats } = parser.parse(input);
+  ctx.body = {
+    input,
+    stats,
+  };
 });
 
 apiRouter.get('/roll', async (ctx) => {
   const { input, seed = randomstring.generate() } = ctx.query;
   ctx.body = {
+    input,
     result: parser.parse(input).roll(seed),
     seed,
   };
