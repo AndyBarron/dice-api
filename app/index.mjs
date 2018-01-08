@@ -1,9 +1,9 @@
 /* eslint callback-return: 0, require-await: 0 */
 import Koa from 'koa';
 import Router from 'koa-router';
-import randomstring from 'randomstring';
 import { PORT } from './config';
 import Parser from './Parser';
+import Rng from './Rng';
 
 const parser = new Parser();
 
@@ -71,12 +71,13 @@ apiRouter.get('/stats', async (ctx) => {
 });
 
 apiRouter.get('/roll', async (ctx) => {
-  const { input, seed = randomstring.generate() } = ctx.query;
-  const result = parser.parse(input).roll(seed);
+  const { input, seed } = ctx.query;
+  const rng = Rng.fromOptionalSeed(seed);
+  const result = parser.parse(input).roll(rng);
   ctx.body = {
     input,
     result,
-    seed,
+    seed: rng.seed,
   };
 });
 

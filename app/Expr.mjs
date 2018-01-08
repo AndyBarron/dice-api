@@ -1,5 +1,4 @@
 import assert from 'assert';
-import { generateRandomInteger } from './random';
 
 const SYMBOL_STATS = Symbol('Expr cached stats');
 const FUNCTION_NAME_SET = new Set([
@@ -51,36 +50,36 @@ export default class Expr {
         throw new Error(`Unrecognized Expr kind in constructor: "${this.kind}"`);
     }
   }
-  roll(seed) {
-    assert(typeof seed !== 'undefined');
+  roll(rng) {
+    assert(typeof rng !== 'undefined');
     switch (this.kind) {
       case 'ADD':
-        return this.left.roll(seed) + this.right.roll(seed);
+        return this.left.roll(rng) + this.right.roll(rng);
       case 'SUB':
-        return this.left.roll(seed) - this.right.roll(seed);
+        return this.left.roll(rng) - this.right.roll(rng);
       case 'MUL':
-        return this.left.roll(seed) * this.right.roll(seed);
+        return this.left.roll(rng) * this.right.roll(rng);
       case 'DIV':
-        return this.left.roll(seed) / this.right.roll(seed);
+        return this.left.roll(rng) / this.right.roll(rng);
       case 'NEG':
-        return -this.inner.roll(seed);
+        return -this.inner.roll(rng);
       case 'PARENS':
-        return this.inner.roll(seed);
+        return this.inner.roll(rng);
       case 'NUMBER':
         return this.value;
       case 'ROLL': {
         let total = 0;
         for (let i = 0; i < this.count; i++) {
-          total += generateRandomInteger(1, this.sides, seed);
+          total += rng.generateRandomInteger(1, this.sides);
         }
         return total;
       }
       case 'FUNCTION': {
         switch (this.name) {
           case 'max':
-            return Math.max(...this.params.map((expr) => expr.roll(seed)));
+            return Math.max(...this.params.map((expr) => expr.roll(rng)));
           case 'min':
-            return Math.min(...this.params.map((expr) => expr.roll(seed)));
+            return Math.min(...this.params.map((expr) => expr.roll(rng)));
           default:
             return throwFunctionNameError(this.name);
         }
