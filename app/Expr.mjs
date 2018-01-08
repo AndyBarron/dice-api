@@ -2,8 +2,22 @@ import assert from 'assert';
 import { generateRandomInteger } from './random';
 
 const SYMBOL_STATS = Symbol('Expr cached stats');
+const FUNCTION_NAME_SET = new Set([
+  'max',
+  'min',
+]);
+
+const throwFunctionNameError = (name) => {
+  const error = new Error(`Unrecognized function name: "${name}"`);
+  error.expose = true;
+  error.statusCode = 400;
+  throw error;
+};
 
 export default class Expr {
+  static create(data) {
+    return new Expr(data);
+  }
   constructor(data) {
     this.kind = data.kind;
     switch (this.kind) {
@@ -25,6 +39,13 @@ export default class Expr {
       case 'ROLL':
         this.count = data.count;
         this.sides = data.sides;
+        break;
+      case 'FUNCTION':
+        this.name = data.name;
+        this.params = data.params.map(Expr.create);
+        if (!FUNCTION_NAME_SET.has(this.name)) {
+          return throwFunctionNameError(this.name);
+        }
         break;
       default:
         throw new Error(`Unrecognized Expr kind in constructor: "${this.kind}"`);
@@ -53,6 +74,16 @@ export default class Expr {
           total += generateRandomInteger(1, this.sides, seed);
         }
         return total;
+      }
+      case 'FUNCTION': {
+        switch (this.name) {
+          case 'max':
+            return Math.max(...this.params.map((expr) => expr.roll(seed)));
+          case 'min':
+            return Math.min(...this.params.map((expr) => expr.roll(seed)));
+          default:
+            return throwFunctionNameError(this.name);
+        }
       }
       default:
         throw new Error(`Unrecognized Expr kind in roll: "${this.kind}"`);
@@ -125,6 +156,26 @@ export default class Expr {
           max: this.count * this.sides,
           min: this.count,
         };
+      case 'FUNCTION': {
+        switch (this.name) {
+          case 'max': {
+            const paramStats = this.params.map((expr) => expr.stats);
+            return {
+              max: Math.max(...paramStats.map((stats) => stats.max)),
+              min: Math.max(...paramStats.map((stats) => stats.min)),
+            };
+          }
+          case 'min': {
+            const paramStats = this.params.map((expr) => expr.stats);
+            return {
+              max: Math.min(...paramStats.map((stats) => stats.max)),
+              min: Math.min(...paramStats.map((stats) => stats.min)),
+            };
+          }
+          default:
+            return throwFunctionNameError(this.name);
+        }
+      }
       default:
         throw new Error(`Unrecognized Expr kind in computeStats: "${this.kind}"`);
     }

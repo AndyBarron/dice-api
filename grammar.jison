@@ -3,18 +3,21 @@
 
 /* lexical grammar */
 %lex
+%options case-insensitive
 %%
 
 \s+ /* skip whitespace */
 (\d+"."?|"."\d+|\d+"."\d+)\b return 'NUMBER'
-\d*\s*[dD]\s*(0*[1-9]\d*) return 'ROLL'
-"*"                   return '*'
-"/"                   return '/'
-"-"                   return '-'
-"+"                   return '+'
-"("                   return '('
-")"                   return ')'
-<<EOF>>               return 'EOF'
+\d*\s*"d"\s*(0*[1-9]\d*) return 'ROLL'
+"max"|"min" return 'FUNCTION'
+"," return ','
+"*" return '*'
+"/" return '/'
+"-" return '-'
+"+" return '+'
+"(" return '('
+")" return ')'
+<<EOF>> return 'EOF'
 
 /lex
 
@@ -32,6 +35,17 @@
 expressions
   : e EOF
     { return $1; }
+  ;
+
+params
+  : e
+    {{
+      $$ = [$1];
+    }}
+  | params ',' e
+    {{
+      $$ = [...$1, $3];
+    }}
   ;
 
 e
@@ -96,6 +110,14 @@ e
         kind: 'ROLL',
         count: countString ? Number(countString) : 1,
         sides: Number(sidesString),
+      };
+    }}
+  | FUNCTION '(' params ')'
+    {{
+      $$ = {
+        kind: 'FUNCTION',
+        name: $1.toLowerCase(),
+        params: $3,
       };
     }}
   ;

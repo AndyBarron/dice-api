@@ -72,9 +72,10 @@ apiRouter.get('/stats', async (ctx) => {
 
 apiRouter.get('/roll', async (ctx) => {
   const { input, seed = randomstring.generate() } = ctx.query;
+  const result = parser.parse(input).roll(seed);
   ctx.body = {
     input,
-    result: parser.parse(input).roll(seed),
+    result,
     seed,
   };
 });
